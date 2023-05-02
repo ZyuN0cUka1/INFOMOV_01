@@ -13,6 +13,10 @@ static char* sourceFile[64]; // yup, ugly constant
 // access to GLFW window in template.cpp
 extern GLFWwindow* window;
 
+// default worksize
+static size_t workSize[] = { SCRWIDTH, SCRHEIGHT };
+static size_t localSize[] = { 32, 4 };
+
 #define CHECKCL(r) CheckCL( r, __FILE__, __LINE__ )
 
 void FatalError( const char* fmt, ... )
@@ -314,17 +318,17 @@ Kernel::Kernel( char* file, char* entryPoint )
 		// and: https://stackoverflow.com/questions/12868889/clgetprograminfo-cl-program-binary-sizes-incorrect-results
 		cl_uint devCount;
 		CHECKCL( clGetProgramInfo( program, CL_PROGRAM_NUM_DEVICES, sizeof( cl_uint ), &devCount, NULL ) );
-		size_t* sizes = new size_t[devCount];
-		sizes[0] = 0;
+		size_t* size = new size_t[devCount];
+		size[0] = 0;
 		size_t received;
-		CHECKCL( clGetProgramInfo( program, CL_PROGRAM_BINARY_SIZES /* wrong data... */, devCount * sizeof( size_t ), sizes, &received ) );
+		CHECKCL( clGetProgramInfo( program, CL_PROGRAM_BINARY_SIZES /* wrong data... */, devCount * sizeof( size_t ), size, &received ) );
 		char** binaries = new char* [devCount];
 		for (uint i = 0; i < devCount; i++)
-			binaries[i] = new char[sizes[i] + 1];
+			binaries[i] = new char[size[i] + 1];
 		CHECKCL( clGetProgramInfo( program, CL_PROGRAM_BINARIES, devCount * sizeof( size_t ), binaries, NULL ) );
 		FILE* f = fopen( "buildlog.txt", "wb" );
 		for (uint i = 0; i < devCount; i++)
-			fwrite( binaries[i], 1, sizes[i] + 1, f );
+			fwrite( binaries[i], 1, size[i] + 1, f );
 		fclose( f );
 	}
 	else
@@ -338,10 +342,10 @@ Kernel::Kernel( char* file, char* entryPoint )
 		fwrite( log, 1, size, f );
 		fclose( f );
 		// find and display the first error. Note: platform specific sadly; code below is for NVIDIA
-		char* errorString = strstr( log, ": error:" );
-		if (errorString)
+		char* error = strstr( log, ": error:" );
+		if (error)
 		{
-			int errorPos = (int)(errorString - log);
+			int errorPos = (int)(error - log);
 			while (errorPos > 0) if (log[errorPos - 1] == '\n') break; else errorPos--;
 			// translate file and line number of error and report
 			log[errorPos + 2048] = 0;
@@ -427,7 +431,7 @@ bool Kernel::InitCL()
 	if (!CHECKCL( error = clGetDeviceIDs( platform, CL_DEVICE_TYPE_ALL, 0, NULL, &devCount ) )) return false;
 	devices = new cl_device_id[devCount];
 	if (!CHECKCL( error = clGetDeviceIDs( platform, CL_DEVICE_TYPE_ALL, devCount, devices, NULL ) )) return false;
-	int deviceUsed = -1;
+	uint deviceUsed = -1;
 	// search a capable OpenCL device
 	char device_string[1024], device_platform[1024];
 	for (uint i = 0; i < devCount; i++)
