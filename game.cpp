@@ -290,7 +290,7 @@ void Game::Tick( float _DT )
 		__int64 diff = Evaluate();
 		if (diff < fitness) fitness = diff; else 
 		UndoMutation( lidx );
-		// lidx = (lidx + 1) % LINES;
+		lidx = (lidx + 1) % LINES;
 		iterCount++;
 	}
 	// stats

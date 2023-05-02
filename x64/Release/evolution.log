@@ -1,0 +1,16 @@
+﻿  template.cpp
+  game.cpp
+C:\Work\INFOMOV\INFOMOV_01\game.cpp(109,51): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+C:\Work\INFOMOV\INFOMOV_01\game.cpp(154,47): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+C:\Work\INFOMOV\INFOMOV_01\game.cpp(301,14): warning C4477: “sprintf”: 格式字符串“%i”需要类型“int”的参数，但可变参数 1 拥有了类型“__int64”
+C:\Work\INFOMOV\INFOMOV_01\game.cpp(301,14): message : 请考虑在格式字符串中使用“%lli”
+C:\Work\INFOMOV\INFOMOV_01\game.cpp(301,14): message : 请考虑在格式字符串中使用“%Ii”
+C:\Work\INFOMOV\INFOMOV_01\game.cpp(301,14): message : 请考虑在格式字符串中使用“%I64i”
+  opencl.cpp
+  opengl.cpp
+  sprite.cpp
+  surface.cpp
+  tmplmath.cpp
+  正在生成代码...
+    正在创建库 C:\Work\INFOMOV\INFOMOV_01\x64\myGame.lib 和对象 C:\Work\INFOMOV\INFOMOV_01\x64\myGame.exp
+  evolution.vcxproj -> C:\Work\INFOMOV\INFOMOV_01\x64\myGame.exe

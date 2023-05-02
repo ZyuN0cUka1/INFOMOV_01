@@ -63,8 +63,8 @@ void DrawQuad()
 	if (!vao)
 	{
 		// generate buffers
-		static const GLfloat verts[] = { -1, 1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0 };
-		static const GLfloat uvdata[] = { 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1 };
+		static const GLfloat verts[] = { 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0 };
+		static const GLfloat uvdata[] = { -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, 1, 1 };
 		GLuint vertexBuffer = CreateVBO( verts, sizeof( verts ) );
 		GLuint UVBuffer = CreateVBO( uvdata, sizeof( uvdata ) );
 		glGenVertexArrays( 1, &vao );
