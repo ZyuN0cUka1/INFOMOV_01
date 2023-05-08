@@ -7,7 +7,6 @@ del *.pdb
 del x64\*.exp
 del x64\*.lib
 del Upgradelog.xml
-del *.exe
 del *.bsc
 del applog.txt
 del *.suo /AH

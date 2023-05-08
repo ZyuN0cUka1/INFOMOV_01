@@ -6,6 +6,7 @@
 #define ITERATIONS	16
 
 #define IRand(x) ((int)(RandomFloat()*(x)))
+#define div_255_fast(x) (((x) + (((x) + 257) >> 8)) >> 8)
 
 int lx1[LINES], ly1[LINES], lx2[LINES], ly2[LINES];			// lines: start and end coordinates
 int x1_, y1_, x2_, y2_;										// room for storing line backup
