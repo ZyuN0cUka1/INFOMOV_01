@@ -1,9 +1,7 @@
 ﻿  game.cpp
-C:\Work\INFOMOV\INFOMOV_01\game.cpp(104,32): warning C4554: “>>”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
-C:\Work\INFOMOV\INFOMOV_01\game.cpp(104,42): warning C4554: “>>”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
-C:\Work\INFOMOV\INFOMOV_01\game.cpp(326,14): warning C4477: “sprintf”: 格式字符串“%i”需要类型“int”的参数，但可变参数 1 拥有了类型“__int64”
-C:\Work\INFOMOV\INFOMOV_01\game.cpp(326,14): message : 请考虑在格式字符串中使用“%lli”
-C:\Work\INFOMOV\INFOMOV_01\game.cpp(326,14): message : 请考虑在格式字符串中使用“%Ii”
-C:\Work\INFOMOV\INFOMOV_01\game.cpp(326,14): message : 请考虑在格式字符串中使用“%I64i”
+C:\Work\INFOMOV\INFOMOV_01\game.cpp(344,14): warning C4477: “sprintf”: 格式字符串“%i”需要类型“int”的参数，但可变参数 1 拥有了类型“__int64”
+C:\Work\INFOMOV\INFOMOV_01\game.cpp(344,14): message : 请考虑在格式字符串中使用“%lli”
+C:\Work\INFOMOV\INFOMOV_01\game.cpp(344,14): message : 请考虑在格式字符串中使用“%Ii”
+C:\Work\INFOMOV\INFOMOV_01\game.cpp(344,14): message : 请考虑在格式字符串中使用“%I64i”
     正在创建库 C:\Work\INFOMOV\INFOMOV_01\x64\myGame.lib 和对象 C:\Work\INFOMOV\INFOMOV_01\x64\myGame.exp
   evolution.vcxproj -> C:\Work\INFOMOV\INFOMOV_01\x64\myGame.exe

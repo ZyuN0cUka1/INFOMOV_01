@@ -7,6 +7,12 @@
 
 #define IRand(x) ((int)(RandomFloat()*(x)))
 
+#define GetR(x) ((x) & 0xff)
+#define GetG(x) (((x) >> 8) & 0xff)
+#define GetB(x) (((x) >> 16) & 0xff)
+#define GetRGB(x) (((((x)<<8)|(x))<<8)|(x))
+#define div_255_fast(x) (((x) + (((x) + 257) >> 8)) >> 8)
+
 int lx1[LINES], ly1[LINES], lx2[LINES], ly2[LINES];			// lines: start and end coordinates
 int x1_, y1_, x2_, y2_;										// room for storing line backup
 __int64 fitness = 0xfffffffff;								// similarity to reference image
@@ -97,11 +103,12 @@ void DrawWuLine( Surface *screen, int X0, int Y0, int X1, int Y1, uint clrLine )
     /* Line is not horizontal, diagonal, or vertical */
     unsigned short ErrorAcc = 0;  /* initialize the line error accumulator to 0 */
     
-    BYTE rl = GetRValue( clrLine );
-    BYTE gl = GetGValue( clrLine );
-    BYTE bl = GetBValue( clrLine );
+    BYTE rl = GetR( clrLine );
+    //BYTE gl = GetG( clrLine );
+    //BYTE bl = GetB( clrLine );
     //BYTE grayl = rl * 0.299 + gl * 0.587 + bl * 0.114;
-    short grayl = rl >> 2 + gl >> 1 + bl >> 3;
+    //const short grayl = rl >> 2 + gl >> 1 + bl >> 3;
+    //short grayb;
     
     /* Is this an X-major or Y-major line? */
     if (DeltaY > DeltaX)
@@ -129,32 +136,37 @@ void DrawWuLine( Surface *screen, int X0, int Y0, int X1, int Y1, uint clrLine )
 
             //uint* pixel = &pixels[X0 + Y0 * SCRWIDTH];
 
-            BYTE rb = GetRValue(*pixel);
-            BYTE gb = GetGValue(*pixel);
-            BYTE bb = GetBValue(*pixel);
-            short grayb = (rb >> 2) + (gb >> 1) + (bb >> 3);
+            BYTE rb = GetR(*pixel);
+            //BYTE gb = GetG(*pixel);
+            //BYTE bb = GetB(*pixel);
+            //grayb = (rb >> 2) + (gb >> 1) + (bb >> 3);
+            //grayb = ((((bb >> 1) + rb) >> 1) + gb) >> 1;
 
-            const unsigned short& k0 = ((grayl - grayb) >> 15) ? w : iw;
+            //const unsigned short& k0 = ((grayl - grayb) >> 15) ? w : iw;
+            unsigned short rgb = w * rb + iw * rl;
+            uint rgbr = div_255_fast(rgb);
 
-            BYTE rr = (rb > rl ? (((k0 * (rb - rl)) >> 8) + rl) : (((k0 * (rl - rb)) >> 8) + rb));
-            BYTE gr = (gb > gl ? (((k0 * (gb - gl)) >> 8) + gl) : (((k0 * (gl - gb)) >> 8) + gb));
-            BYTE br = (bb > bl ? (((k0 * (bb - bl)) >> 8) + bl) : (((k0 * (bl - bb)) >> 8) + bb));
-            *pixel = RGB(rr, gr, br);
+            //BYTE rr = (rb > rl ? (((k0 * (rb - rl)) >> 8) + rl) : (((k0 * (rl - rb)) >> 8) + rb));
+            //BYTE gr = (gb > gl ? (((k0 * (gb - gl)) >> 8) + gl) : (((k0 * (gl - gb)) >> 8) + gb));
+            //BYTE br = (bb > bl ? (((k0 * (bb - bl)) >> 8) + bl) : (((k0 * (bl - bb)) >> 8) + bb));
+            *pixel = GetRGB(rgbr);
             
             //pixel += XDir;
             uint* pixel0 = pixel + XDir;
 
-            rb = GetRValue(*pixel0);
-            gb = GetGValue(*pixel0);
-            bb = GetBValue(*pixel0);
-            grayb = (rb >> 2) + (gb >> 1) + (bb >> 3);
+            rb = GetR(*pixel0);
+            //gb = GetG(*pixel0);
+            //bb = GetB(*pixel0);
+            //grayb = (rb >> 2) + (gb >> 1) + (bb >> 3);
+            //grayb = ((((bb >> 1) + rb) >> 1) + gb) >> 1;
 
-            const unsigned short& k1 = ((grayl - grayb) >> 15) ? iw : w;
-
-            rr = (rb > rl ? (((k1 * (rb - rl)) >> 8) + rl) : (((k1 * (rl - rb)) >> 8) + rb));
-            gr = (gb > gl ? (((k1 * (gb - gl)) >> 8) + gl) : (((k1 * (gl - gb)) >> 8) + gb));
-            br = (bb > bl ? (((k1 * (bb - bl)) >> 8) + bl) : (((k1 * (bl - bb)) >> 8) + bb));
-            *pixel0 = RGB(rr, gr, br);
+            //const unsigned short& k1 = ((grayl - grayb) >> 15) ? iw : w;
+            rgb = iw * rb + w * rl;
+            rgbr = div_255_fast(rgb);
+            //rr = (rb > rl ? (((k1 * (rb - rl)) >> 8) + rl) : (((k1 * (rl - rb)) >> 8) + rb));
+            //gr = (gb > gl ? (((k1 * (gb - gl)) >> 8) + gl) : (((k1 * (gl - gb)) >> 8) + gb));
+            //br = (bb > bl ? (((k1 * (bb - bl)) >> 8) + bl) : (((k1 * (bl - bb)) >> 8) + bb));
+            *pixel0 = GetRGB(rgbr);
         }
         /* Draw the final pixel, which is always exactly intersected by the line
         and so needs no weighting */
@@ -185,34 +197,40 @@ void DrawWuLine( Surface *screen, int X0, int Y0, int X1, int Y1, uint clrLine )
 
         //uint* pixel = &pixels[X0 + Y0 * SCRWIDTH];
 
-        BYTE rb = GetRValue(*pixel);
-        BYTE gb = GetGValue(*pixel);
-        BYTE bb = GetBValue(*pixel);
-        short grayb = (rb >> 2) + (gb >> 1) + (bb >> 3);
+        BYTE rb = GetR(*pixel);
+        //BYTE gb = GetG(*pixel);
+        //BYTE bb = GetB(*pixel);
 
-        const unsigned short& k0 = ((grayl - grayb) >> 15) ? w : iw;
+        //grayb = (rb >> 2) + (gb >> 1) + (bb >> 3);
+        //grayb = ((((bb >> 1) + rb) >> 1) + gb) >> 1;
 
-        BYTE rr = (rb > rl ? (((k0 * (rb - rl)) >> 8) + rl) : (((k0 * (rl - rb)) >> 8) + rb));
-        BYTE gr = (gb > gl ? (((k0 * (gb - gl)) >> 8) + gl) : (((k0 * (gl - gb)) >> 8) + gb));
-        BYTE br = (bb > bl ? (((k0 * (bb - bl)) >> 8) + bl) : (((k0 * (bl - bb)) >> 8) + bb));
+        //const unsigned short& k0 = ((grayl - grayb) >> 15) ? w : iw;
 
-        *pixel = RGB(rr, gr, br);
+        //BYTE rr = (rb > rl ? (((k0 * (rb - rl)) >> 8) + rl) : (((k0 * (rl - rb)) >> 8) + rb));
+        //BYTE gr = (gb > gl ? (((k0 * (gb - gl)) >> 8) + gl) : (((k0 * (gl - gb)) >> 8) + gb));
+        //BYTE br = (bb > bl ? (((k0 * (bb - bl)) >> 8) + bl) : (((k0 * (bl - bb)) >> 8) + bb));
+        unsigned short rgb = w * rb + iw * rl;
+        uint rgbr = div_255_fast(rgb);
+        
+        *pixel = GetRGB(rgbr);
         
         //pixel += SCRWIDTH;
         uint* pixel0 = pixel + SCRWIDTH;
 
-        rb = GetRValue(*pixel0);
-        gb = GetGValue(*pixel0);
-        bb = GetBValue(*pixel0);
-        grayb = (rb >> 2) + (gb >> 1) + (bb >> 3);
+        rb = GetR(*pixel0);
+        //gb = GetG(*pixel0);
+        //bb = GetB(*pixel0);
+        //grayb = (rb >> 2) + (gb >> 1) + (bb >> 3);
+        //grayb = ((((bb >> 1) + rb) >> 1) + gb) >> 1;
 
-        const unsigned short& k1 = ((grayl - grayb) >> 15) ? iw : w;
-        rr = (rb > rl ? (((k1 * (rb - rl)) >> 8) + rl) : (((k1 * (rl - rb)) >> 8) + rb));
-        gr = (gb > gl ? (((k1 * (gb - gl)) >> 8) + gl) : (((k1 * (gl - gb)) >> 8) + gb));
-        br = (bb > bl ? (((k1 * (bb - bl)) >> 8) + bl) : (((k1 * (bl - bb)) >> 8) + bb));
-        
+        //const unsigned short& k1 = ((grayl - grayb) >> 15) ? iw : w;
+        //rr = (rb > rl ? (((k1 * (rb - rl)) >> 8) + rl) : (((k1 * (rl - rb)) >> 8) + rb));
+        //gr = (gb > gl ? (((k1 * (gb - gl)) >> 8) + gl) : (((k1 * (gl - gb)) >> 8) + gb));
+        //br = (bb > bl ? (((k1 * (bb - bl)) >> 8) + bl) : (((k1 * (bl - bb)) >> 8) + bb));
+        rgb = iw * rb + w * rl;
+        rgbr = div_255_fast(rgb);
         //screen->Plot( X0, Y0 + 1, RGB( rr, gr, br ) );
-        *pixel0 = RGB(rr, gr, br);
+        *pixel0 = GetRGB(rgbr);
     }
     
     /* Draw the final pixel, which is always exactly intersected by the line
